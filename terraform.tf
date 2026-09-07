@@ -7,7 +7,7 @@ terraform {
 
     workspaces {
       project = "project-portfolio-iac"
-      name = "aws-workspace"
+      name    = "aws-workspace"
     }
   }
 
