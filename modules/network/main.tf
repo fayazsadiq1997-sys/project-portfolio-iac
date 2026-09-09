@@ -50,3 +50,10 @@ resource "aws_subnet" "public_subnet" {
   availability_zone = each.key
   cidr_block        = each.value.cidr_block
 }
+
+resource "aws_eip" "nat_eip" {
+  domain = "vpc"
+  tags = {
+    Name = "${local.name_prefix}eip"
+  }
+}
