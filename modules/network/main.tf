@@ -1,5 +1,23 @@
 locals {
   name_prefix = "${var.project_name}-${var.environment}-"
+
+  azs = slice(data.aws_availability_zones.available.names, 0, var.az_count)
+
+  public_subnets = {
+    for idx, az in local.azs : az => {
+      cidr_block = cidrsubnet(var.cidr_block, 4, idx)
+    }
+  }
+
+  private_subnets = {
+    for idx, az in local.azs : az => {
+      cidr_block = cidrsubnet(var.cidr_block, 4, idx + var.az_count)
+    }
+  }
+}
+
+data "aws_availability_zones" "available" {
+  state = "available"
 }
 
 resource "aws_vpc" "main" {
@@ -17,4 +35,18 @@ resource "aws_internet_gateway" "gw" {
   tags = {
     Name = "${local.name_prefix}gw"
   }
+}
+
+resource "aws_subnet" "private_subnet" {
+  vpc_id            = aws_vpc.main.id
+  for_each          = local.private_subnets
+  availability_zone = each.key
+  cidr_block        = each.value.cidr_block
+}
+
+resource "aws_subnet" "public_subnet" {
+  vpc_id            = aws_vpc.main.id
+  for_each          = local.public_subnets
+  availability_zone = each.key
+  cidr_block        = each.value.cidr_block
 }
