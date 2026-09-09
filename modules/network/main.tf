@@ -57,3 +57,15 @@ resource "aws_eip" "nat_eip" {
     Name = "${local.name_prefix}eip"
   }
 }
+
+resource "aws_nat_gateway" "nat" {
+  allocation_id                  = aws_eip.nat_eip.id
+  subnet_id                      = aws_subnet.public_subnet[local.azs[0]].id
+
+  tags = {
+    Name = "${local.name_prefix}nat"
+  }
+
+  # To ensure proper ordering, an explicit dependencyhas been added on the Internet Gateway for the VPC.
+  depends_on = [aws_internet_gateway.gw]
+}
