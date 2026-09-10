@@ -42,6 +42,9 @@ resource "aws_subnet" "private_subnet" {
   for_each          = local.private_subnets
   availability_zone = each.key
   cidr_block        = each.value.cidr_block
+  tags = {
+    Name = "${local.name_prefix}private-${each.key}"
+  }
 }
 
 resource "aws_subnet" "public_subnet" {
@@ -49,6 +52,9 @@ resource "aws_subnet" "public_subnet" {
   for_each          = local.public_subnets
   availability_zone = each.key
   cidr_block        = each.value.cidr_block
+  tags = {
+    Name = "${local.name_prefix}public-${each.key}"
+  }
 }
 
 resource "aws_eip" "nat_eip" {
