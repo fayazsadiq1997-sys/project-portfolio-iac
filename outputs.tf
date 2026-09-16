@@ -17,3 +17,9 @@ output "private_subnet_ids" {
   description = "List of IDs of private subnets"
   value       = module.vpc.private_subnet_ids
 }
+
+output "ecr_repository_url" {
+  description = "URL for created ECR Repo"
+  value       = module.compute.ecr_repository_url
+}
+
