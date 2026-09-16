@@ -13,3 +13,8 @@ resource "aws_ecr_repository" "app" {
     Name = "${local.name_prefix}app"
   }
 }
+
+resource "aws_cloudwatch_log_group" "app" {
+  name              = "/ecs/${local.name_prefix}app"
+  retention_in_days = 7
+}
