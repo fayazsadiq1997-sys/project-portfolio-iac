@@ -19,8 +19,8 @@ resource "aws_cloudwatch_log_group" "app" {
   retention_in_days = 7
 }
 
-# Trust policy
-data "aws_iam_policy_document" "execution_assume" {
+# Trust policy. Currently used by task role and execution role.
+data "aws_iam_policy_document" "ecs_tasks_assume" {
   statement {
     actions = ["sts:AssumeRole"]
     principals {
@@ -33,7 +33,7 @@ data "aws_iam_policy_document" "execution_assume" {
 # Execution Role
 resource "aws_iam_role" "execution" {
   name               = "${local.name_prefix}execution"
-  assume_role_policy = data.aws_iam_policy_document.execution_assume.json
+  assume_role_policy = data.aws_iam_policy_document.ecs_tasks_assume.json
 }
 
 # Permissions document
@@ -66,4 +66,11 @@ resource "aws_iam_role_policy" "execution" {
   name   = "${local.name_prefix}execution-policy"
   role   = aws_iam_role.execution.id
   policy = data.aws_iam_policy_document.execution_permissions.json
+}
+
+#Task role: Assumed by running containers code from SDK 
+resource "aws_iam_role" "task" {
+  name               = "${local.name_prefix}task"
+  #Reuse execution role trust doc, both roles are used by ecs-tasks.amazonaws.com
+  assume_role_policy = data.aws_iam_policy_document.ecs_tasks_assume.json
 }
