@@ -13,4 +13,5 @@ module "compute" {
 
   project_name = "main"
   environment  = "dev"
+  vpc_id = module.vpc.vpc_id
 }

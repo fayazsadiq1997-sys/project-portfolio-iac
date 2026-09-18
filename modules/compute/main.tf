@@ -75,6 +75,27 @@ resource "aws_iam_role" "task" {
   assume_role_policy = data.aws_iam_policy_document.ecs_tasks_assume.json
 }
 
+#ECS Cluster (Fargate)
 resource "aws_ecs_cluster" "main" {
   name = "${local.name_prefix}cluster"
 }
+
+#Security Group
+resource "aws_security_group" "task" {
+  name        = "${local.name_prefix}task"
+  description = "ECS Task ENI SG"
+  vpc_id      = var.vpc_id
+
+  tags = {
+    Name = "${local.name_prefix}task"
+  }
+}
+
+resource "aws_vpc_security_group_egress_rule" "task_https_egress" {
+  security_group_id = aws_security_group.task.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol = "tcp"
+  from_port = 443
+  to_port = 443
+}
+
