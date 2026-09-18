@@ -70,7 +70,11 @@ resource "aws_iam_role_policy" "execution" {
 
 #Task role: Assumed by running containers code from SDK 
 resource "aws_iam_role" "task" {
-  name               = "${local.name_prefix}task"
+  name = "${local.name_prefix}task"
   #Reuse execution role trust doc, both roles are used by ecs-tasks.amazonaws.com
   assume_role_policy = data.aws_iam_policy_document.ecs_tasks_assume.json
+}
+
+resource "aws_ecs_cluster" "main" {
+  name = "${local.name_prefix}cluster"
 }
