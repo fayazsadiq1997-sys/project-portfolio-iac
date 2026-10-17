@@ -1,8 +1,7 @@
 # project-portfolio-iac
 
 Terraform for a containerised web application on AWS. This is Project A of a two-part
-portfolio and covers the network and compute layers. The stack is a work in progress and
-is not yet complete.
+personal portfolio and covers the network and compute layers, built incrementally. It is a work in progress and  not yet complete.
 
 ## Status
 
