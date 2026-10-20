@@ -12,3 +12,14 @@ variable "vpc_id" {
   description = "VPC ID"
   type        = string
 }
+
+variable "image_tag" {
+  description = "Image tag used by ECS Task definition"
+  type        = string
+}
+
+variable "container_port" {
+  description = "Container port used by Fargate"
+  type        = number
+  default     = 80
+}

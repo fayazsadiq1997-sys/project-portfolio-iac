@@ -99,3 +99,35 @@ resource "aws_vpc_security_group_egress_rule" "task_https_egress" {
   to_port = 443
 }
 
+#Picks currently configured AWS Region
+data "aws_region" "current" {}
+
+resource "aws_ecs_task_definition" "app" {
+  family                   = "${local.name_prefix}app"
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = 256
+  memory                   = 512
+  execution_role_arn       = aws_iam_role.execution.arn
+  task_role_arn            = aws_iam_role.task.arn
+  container_definitions    = jsonencode([{
+    name = "${local.name_prefix}app",
+    image = "${aws_ecr_repository.app.repository_url}:${var.image_tag}",
+    essential = true,
+    portMappings = [
+      {
+        containerPort = var.container_port
+      }
+    ],
+    logConfiguration = {
+      logDriver = "awslogs"
+      options = {
+        awslogs-group         = aws_cloudwatch_log_group.app.name
+        awslogs-region        = data.aws_region.current.region
+        awslogs-stream-prefix = "ecs"
+      }
+    }
+  }])
+}
+
+
