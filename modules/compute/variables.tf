@@ -23,3 +23,8 @@ variable "container_port" {
   type        = number
   default     = 80
 }
+
+variable "private_subnet_list" {
+  description = "List of subnets used by AWS ECS Service"
+  type        = list(string)
+}

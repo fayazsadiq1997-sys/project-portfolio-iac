@@ -11,8 +11,9 @@ module "vpc" {
 module "compute" {
   source = "./modules/compute"
 
-  project_name = "main"
-  environment  = "dev"
-  vpc_id = module.vpc.vpc_id
-  image_tag = "20.10.2026"
+  project_name        = "main"
+  environment         = "dev"
+  vpc_id              = module.vpc.vpc_id
+  image_tag           = "20.10.2026"
+  private_subnet_list = module.vpc.private_subnet_ids
 }

@@ -94,9 +94,9 @@ resource "aws_security_group" "task" {
 resource "aws_vpc_security_group_egress_rule" "task_https_egress" {
   security_group_id = aws_security_group.task.id
   cidr_ipv4         = "0.0.0.0/0"
-  ip_protocol = "tcp"
-  from_port = 443
-  to_port = 443
+  ip_protocol       = "tcp"
+  from_port         = 443
+  to_port           = 443
 }
 
 #Picks currently configured AWS Region
@@ -110,9 +110,9 @@ resource "aws_ecs_task_definition" "app" {
   memory                   = 512
   execution_role_arn       = aws_iam_role.execution.arn
   task_role_arn            = aws_iam_role.task.arn
-  container_definitions    = jsonencode([{
-    name = "${local.name_prefix}app",
-    image = "${aws_ecr_repository.app.repository_url}:${var.image_tag}",
+  container_definitions = jsonencode([{
+    name      = "${local.name_prefix}app",
+    image     = "${aws_ecr_repository.app.repository_url}:${var.image_tag}",
     essential = true,
     portMappings = [
       {
@@ -129,5 +129,19 @@ resource "aws_ecs_task_definition" "app" {
     }
   }])
 }
+
+resource "aws_ecs_service" "app" {
+  name            = "${local.name_prefix}app"
+  cluster         = aws_ecs_cluster.main.id
+  task_definition = aws_ecs_task_definition.app.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
+  network_configuration {
+    assign_public_ip = false
+    security_groups  = [aws_security_group.task.id]
+    subnets          = var.private_subnet_list
+  }
+}
+
 
 
